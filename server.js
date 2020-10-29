@@ -19,6 +19,7 @@ console.log(url);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+
 app.get('/budget', (req, res) => {
     mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(()=>{
@@ -27,7 +28,6 @@ app.get('/budget', (req, res) => {
             .then((data)=> {
                 console.log(data)
                 res.json(data);
-                mongoose.connection.close()
             })
             .catch((connectionError)=> {
                 console.log(connectionError)
@@ -41,21 +41,19 @@ app.get('/budget', (req, res) => {
 })
 
 app.post('/budget', (req,res)=>{
-    res.send("Insert")
-        const budget = new Budget({
+    //res.send("Insert")
+        const budget = new budgetModel({
             title: req.body.title,
             budget: req.body.budget,
             color: req.body.color,
         });
-        budget.save().then((data)=> {
-            if (!data){
-                return res.status(400).json({
-                    errors: err,
-                });
-            }
-            return res.json(data);
+        budget.save().then((data)=> 
+            res.status(201)
+            .json(data))
+            .catch((err) => 
+            console.log(err))
+            
         });
-    });
 
 app.use("/", express.static('public'));
 
